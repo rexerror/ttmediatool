@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>User Dashboard - Flow Automation</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
+
+        /* CSS mô phỏng QSS_STYLE gốc */
+        body { 
+            font-family: 'Chakra Petch', sans-serif; 
+            background-color: #1a1a2e; 
+            color: #e0e0e0; 
+            padding: 20px; 
+        }
+        .container { max-width: 1400px; margin: auto; }
+        
+        /* GENERAL CARD/SECTION STYLING */
+        .card { background-color: #2e2e4a; padding: 20px; border-radius: 10px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3); border: 1px solid #6a0dad; }
+
+        /* HEADER & USER DROPDOWN */
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #6a0dad; padding-bottom: 10px; }
+        h1 { color: #6a0dad; font-size: 24px; margin: 0; }
+        
+        .user-dropdown-container { position: relative; display: inline-block; }
+        .user-dropdown-btn {
+            background-color: #2e2e4a; color: #8a2be2; padding: 10px 15px; border: 1px solid #8a2be2; border-radius: 8px;
+            font-weight: bold; cursor: pointer; transition: background-color 0.2s; font-family: 'Chakra Petch', sans-serif;
+        }
+        .user-dropdown-btn:hover { background-color: #3b3a53; }
+        
+        .dropdown-content {
+            display: none; position: absolute; right: 0; background-color: #1a1a2e; min-width: 280px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5); z-index: 10; border-radius: 8px; border: 1px solid #6a0dad;
+            margin-top: 5px; overflow: hidden;
+        }
+        .dropdown-content a, .dropdown-content div {
+            color: #e0e0e0; padding: 12px 16px; text-decoration: none; display: block; font-size: 14px;
+            border-bottom: 1px solid #3b3a53;
+        }
+        .dropdown-content a:hover { background-color: #5d00a3; color: white; }
+        .dropdown-content .info-item-header { background-color: #3b3a53; font-weight: bold; color: #fec95a; padding: 15px 16px; }
+        .dropdown-content a.logout { color: #ff6347; font-weight: bold; }
+        .dropdown-content a.logout:hover { background-color: #ff6347; color: white; }
+        .user-dropdown-container:focus-within .dropdown-content { display: block; }
+        
+        .info-item { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; font-size: 14px; }
+        .info-item i { color: #8a2be2; width: 15px; text-align: center; }
+
+        /* CONTROL ROW (ACTIONS) */
+        .control-row { display: flex; gap: 20px; align-items: center; margin-bottom: 20px; }
+        select { 
+            padding: 10px; border: 1px solid #6a0dad; border-radius: 5px; background-color: #3b3a53; color: #e0e0e0; 
+            font-size: 14px; font-family: 'Chakra Petch', sans-serif;
+        }
+        
+        /* BUTTONS (General) */
+        .btn-base { 
+            padding: 12px 20px; border: none; border-radius: 8px; 
+            font-weight: bold; cursor: pointer; min-height: 30px; font-size: 14px; 
+            transition: background-color 0.2s; white-space: nowrap; font-family: 'Chakra Petch', sans-serif;
+            width: 200px; 
+            text-align: center;
+        }
+        .btn-generate { background-color: #6a0dad; color: white; }
+        .btn-generate:hover:enabled { background-color: #8a2be2; }
+        .btn-generate:disabled { background-color: #3b3a53; color: #888888; cursor: not-allowed; }
+        
+        /* DOWNLOAD BUTTONS */
+        #btn_download_all, #btn_stop_download {
+            padding: 8px 15px; border-radius: 8px; font-weight: bold; font-size: 13px; border: none;
+            width: 200px; 
+        }
+        #btn_download_all { background-color: #fec95a; color: #1a1a2e; } /* MÀU VÀNG */
+        #btn_download_all:hover:enabled { background-color: #ffda6a; }
+        #btn_download_all:disabled { background-color: #3b3a53; color: #888888; cursor: not-allowed; }
+        #btn_stop_download { background-color: #ff6347; color: white; display: none; } 
+        .download-btn { background-color: #6a0dad; color: white; padding: 5px 10px; border-radius: 5px; font-size: 12px; border: none; font-family: 'Chakra Petch', sans-serif;}
+        .download-btn:hover:enabled { background-color: #8a2be2; }
+        .download-btn:disabled { background-color: #3b3a53 !important; color: #888888 !important; cursor: default; }
+
+        /* TABS */
+        .tab-bar { display: flex; margin-bottom: -1px; }
+        .tab-button { 
+            background: #2e2e4a; color: #e0e0e0; padding: 10px 15px; border: 1px solid #6a0dad; 
+            border-bottom: none; cursor: pointer; border-top-left-radius: 8px; border-top-right-radius: 8px; 
+            margin-right: 2px; min-width: 150px; font-weight: bold; font-family: 'Chakra Petch', sans-serif;
+        }
+        .tab-button.active { background: #6a0dad; color: white; border: 1px solid #6a0dad; border-bottom: none; }
+        .tab-content { 
+            background-color: #1a1a2e; padding: 15px; border: 1px solid #6a0dad; border-radius: 8px; border-top-left-radius: 0; 
+            position: relative; z-index: 1; 
+        }
+
+        /* PROMPT/LOG BOXES */
+        #p2v_prompts, .log-box { background-color: #2e2e4a; border: 1px solid #6a0dad; }
+        #p2v_prompts { 
+            width: 100%; 
+            height: 150px; 
+            resize: vertical; 
+            padding: 10px; 
+            font-family: 'Chakra Petch', monospace; 
+            box-sizing: border-box; 
+            color: white; 
+        }
+        #p2v_prompts:disabled {
+            background-color: #3b3a53;
+            color: #888888;
+            cursor: not-allowed;
+        }
+        .log-box { height: 180px; overflow-y: scroll; padding: 10px; font-size: 12px; }
+
+        /* TABLE */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; background-color: #2e2e4a; border-radius: 5px; border: 1px solid #6a0dad; }
+        th { background-color: #3b3a53; color: #ffffff; padding: 10px; text-align: left; border: 1px solid #3b3a53; font-weight: bold; }
+        td { padding: 10px; border: 1px solid #3b3a53; word-break: break-word; vertical-align: top; } /* Kẻ ô */
+        
+        /* CĂN GIỮA NỘI DUNG TRẠNG THÁI VÀ FILE (P2V) */
+        #p2v_table th:nth-child(2), #p2v_table td:nth-child(2),
+        #p2v_table th:nth-child(3), #p2v_table td:nth-child(3) {
+            text-align: center;
+        }
+
+        /* CĂN GIỮA NỘI DUNG TRẠNG THÁI VÀ FILE (I2V) */
+        #i2v_table th:nth-child(3), #i2v_table td:nth-child(3),
+        #i2v_table th:nth-child(4), #i2v_table td:nth-child(4) {
+            text-align: center;
+        }
+        
+        /* CONTAINER CHO TABLE CÓ THỂ SCROLL */
+        .table-scroll-container {
+            max-height: 350px; /* Chiều cao tối đa cho phép cuộn */
+            overflow-y: auto; /* Cho phép cuộn dọc */
+            margin-top: 15px;
+        }
+        .table-scroll-container table {
+            margin-top: 0;
+        }
+        .table-scroll-container thead th {
+            position: sticky; /* Giữ tiêu đề bảng cố định */
+            top: 0;
+            background-color: #3b3a53;
+            z-index: 2;
+        }
+
+
+        /* STATUS BADGES */
+        .status-badge { padding: 4px 8px; border-radius: 4px; font-weight: bold; font-size: 12px; }
+        
+        /* Màu sắc cho các trạng thái */
+        .status-Running, .status-Initializing { background-color: #fec95a; color: #1a1a2e; }
+        .status-Finished, .status-Hoànthành { background-color: #4CAF50; color: white; }
+        .status-Error, .status-Stopped, .status-Lỗi, .status-Đãdừng { background-color: #ff6347; color: white; }
+        .status-Pending { background-color: #3b3a53; color: #e0e0e0; } /* Thêm trạng thái Pending */
+
+        /* FILE INPUT */
+        .file-input-wrapper { display: inline-block; background-color: #6a0dad; color: white; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; position: relative; }
+        .file-input-wrapper input[type="file"] { opacity: 0; position: absolute; left: 0; top: 0; width: 100%; height: 100%; }
+        .file-input-wrapper:hover { background-color: #8a2be2; }
+
+        /* DISABLE LAYER (overlay khi không được chạy) */
+        #disable-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; 
+            background-color: rgba(26, 26, 46, 0.95); 
+            z-index: 1000; display: none; 
+            flex-direction: column; justify-content: center; align-items: center;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 18px;
+            pointer-events: none; 
+        }
+        #disable-overlay p {
+            color: #ff6347;
+            font-weight: bold;
+            margin-top: 10px;
+            pointer-events: auto; 
+        }
+        
+        /* Custom Alert/Confirm Modal Styling */
+        #customAlertModal, #confirmModal {
+            display: none; 
+            position: fixed; 
+            z-index: 2000; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%;
+            background-color: rgba(0,0,0,0.8); 
+            /* SỬA LỖI CĂN GIỮA: Dùng Flexbox */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        #customAlertModal[style*="display: none"], #confirmModal[style*="display: none"] {
+            display: none !important;
+        }
+        
+        .modal-content-base {
+            background-color: #2e2e4a; 
+            margin: auto; 
+            padding: 30px; 
+            width: 80%; 
+            max-width: 400px; 
+            border-radius: 10px; 
+            text-align: center;
+            box-shadow: 0 0 20px rgba(26, 26, 46, 0.8); 
+            font-family: 'Chakra Petch', sans-serif;
+        }
+        .modal-alert-title-error { color: #ff6347; border-bottom: 2px solid #ff6347; padding-bottom: 10px; }
+        .modal-alert-title-success { color: #4CAF50; border-bottom: 2px solid #4CAF50; padding-bottom: 10px; }
+        .modal-alert-title-confirm { color: #fec95a; border-bottom: 2px solid #fec95a; padding-bottom: 10px; }
+        
+        .modal-icon-error { color: #ff6347; font-size: 30px; margin-bottom: 10px; }
+        .modal-icon-success { color: #4CAF50; font-size: 30px; margin-bottom: 10px; }
+        .modal-icon-confirm { color: #fec95a; font-size: 30px; margin-bottom: 10px; }
+
+        .modal-content-base h3 {
+            margin-top: 0;
+            font-size: 20px;
+        }
+        .modal-content-base p {
+            color: #e0e0e0;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        .modal-btn-group {
+            display: flex; justify-content: center; gap: 15px; margin-top: 20px;
+        }
+        .modal-alert-button {
+            background-color: #6a0dad; 
+            color: white; 
+            padding: 10px 20px; 
+            border: none; 
+            border-radius: 5px;
+            font-weight: bold;
+            font-family: 'Chakra Petch', sans-serif;
+        }
+        .modal-alert-button:hover {
+            background-color: #8a2be2;
+        }
+        /* Lịch sử */
+        .history-day-card { background-color: #1a1a2e; border: 1px dashed #6a0dad; padding: 15px; border-radius: 8px; margin-bottom: 10px; }
+        .history-item { font-size: 14px; margin-top: 10px; padding: 5px 0; border-bottom: 1px solid #3b3a53; }
+        .history-item:last-child { border-bottom: none; }
+        .history-item code { color: #fec95a; background-color: #3b3a53; padding: 2px 5px; border-radius: 3px; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-row">
+            <h1><i class="fas fa-video"></i> TT Media Flow Automation V2.0</h1>
+            
+            <div class="user-dropdown-container" tabindex="0">
+                <button class="user-dropdown-btn">
+                    <i class="fas fa-user-circle"></i> {{ user_info.name }} <i class="fas fa-caret-down"></i>
+                </button>
+                <div class="dropdown-content">
+                    <div class="info-item-header">THÔNG TIN TÀI KHOẢN</div>
+                    <div style="padding: 10px 16px;">
+                        <div class="info-item"><i class="fas fa-id-badge"></i> User: **{{ username }}**</div>
+                        <div class="info-item"><i class="fas fa-users"></i> Team: {{ user_info.team }}</div>
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="control-row">
+            <label for="resolution" style="font-weight: bold; white-space: nowrap;">Chọn Độ phân giải:</label>
+            <select id="resolution">
+                <option value="720p">720p (Nhanh)</option>
+                <option value="1080p">1080p (Upscale, Chậm hơn)</option>
+            </select>
+            <button class="btn-base btn-generate" id="start_gen_btn" onclick="submitTask()"><i class="fas fa-play"></i> BẮT ĐẦU CHẠY</button>
+            
+            <button class="btn-base" id="btn_download_all" onclick="startDownloadAll(event)" disabled style="background-color: #fec95a; color: #1a1a2e;"><i class="fas fa-download"></i> Tải về Tất cả Hoàn thành</button>
+            <button class="btn-base" id="btn_stop_download" onclick="showConfirm(currentTaskId)"><i class="fas fa-stop"></i> Dừng Tải</button>
+            
+            </div>
+
+        <div id="disable-overlay" class="card">
+            <i class="fas fa-ban fa-3x" style="color: #ff6347;"></i>
+            <h2 style="color: #fec95a;">CHỨC NĂNG BỊ VÔ HIỆU HÓA</h2>
+            <p id="disable-message"></p>
+        </div>
+
+        <div class="tab-bar">
+            <button class="tab-button active" id="btn-p2v" onclick="openTab(event, 'p2v', 'P2V')"><i class="fas fa-pen-fancy"></i> P2V</button>
+            <button class="tab-button" id="btn-i2v" onclick="openTab(event, 'i2v', 'I2V')"><i class="fas fa-image"></i> I2V</i</button>
+            <button class="tab-button" onclick="openTab(event, 'history', 'HISTORY')"><i class="fas fa-history"></i> LỊCH SỬ CHẠY</button>
+        </div>
+
+        <div id="p2v" class="tab-content card">
+            <label for="p2v_prompts" style="font-weight: bold; margin-bottom: 5px; display: block;"><i class="fas fa-list-alt"></i> Danh sách Prompts:</label>
+            <div class="prompt-input-area">
+                <textarea id="p2v_prompts" placeholder="Mỗi prompt một dòng..." oninput="updatePromptCount('p2v')"></textarea>
+            </div>
+            <p id="p2v_summary" style="font-weight: bold; color: #fec95a; margin-top: 10px;"><i class="fas fa-file-alt"></i> Tổng: 0 prompts.</p>
+            
+            <h3 style="margin-top: 20px; color: #e0e0e0;"><i class="fas fa-table"></i> Trạng thái Tác vụ P2V:</h3>
+            <div class="table-scroll-container">
+                <table id="p2v_table">
+                    <thead>
+                        <tr>
+                            <th style="width: 50%;">Prompt</th>
+                            <th style="width: 15%;">Trạng thái</th>
+                            <th style="width: 35%;">File</th>
+                        </tr>
+                    </thead>
+                    <tbody id="p2v_table_body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <div id="i2v" class="tab-content card" style="display: none;">
+            <p style="font-weight: bold;"><i class="fas fa-folder-open"></i> Chọn Ảnh (Chỉ .jpg/.png):</p>
+            
+            <label for="i2v_files" class="file-input-wrapper">
+                Chọn file ảnh (.jpg, .png)
+                <input type="file" id="i2v_files" multiple accept=".jpg,.jpeg,.png" onchange="updatePromptCount('i2v')">
+            </label>
+            <p id="i2v_summary" style="font-weight: bold; color: #fec95a; margin-top: 15px;"><i class="fas fa-file-alt"></i> Tổng: 0 ảnh. Prompt cố định: 'slow zoom, slow motion'.</p>
+
+            <h3 style="margin-top: 20px; color: #e0e0e0;"><i class="fas fa-table"></i> Trạng thái Tác vụ I2V:</h3>
+            <div class="table-scroll-container">
+                <table id="i2v_table">
+                    <thead>
+                        <tr>
+                            <th style="width: 25%;">Image File</th>
+                            <th style="width: 25%;">Prompt</th>
+                            <th style="width: 15%;">Trạng thái</th>
+                            <th style="width: 35%;">Video File</th>
+                        </tr>
+                    </thead>
+                    <tbody id="i2v_table_body"></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="history" class="tab-content card" style="display: none;">
+            <h2 style="color: #6a0dad;"><i class="fas fa-history"></i> Lịch Sử Chạy Tool Theo Ngày</h2>
+            <p style="color: #fec95a;">Lưu ý: Chỉ ghi nhận các lần **Khởi tạo** và **Dừng** tác vụ.</p>
+            <div id="history-container">
+                <p>Đang tải lịch sử...</p>
+            </div>
+        </div>
+        
+        <div class="log-section card">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="color: #e0e0e0;"><i class="fas fa-terminal"></i> Log Chi Tiết (<span id="current_task_id">None</span>)</h3>
+                <button class="btn-base" style="background-color: #ff6347; color: white;" onclick="showConfirm(currentTaskId)"><i class="fas fa-stop-circle"></i> DỪNG TÁC VỤ</button>
+            </div>
+            <div class="log-box" id="task_log"></div>
+        </div>
+
+        <div class="task-status-info card">
+            <p id="overall_status"><i class="fas fa-spinner fa-spin"></i> Trạng thái chung: Đang tải...</p>
+        </div>
+
+    </div>
+    
+    <div id="customAlertModal" style="display: none;">
+        <div class="modal-content-base">
+            <div class="modal-icon" id="modalAlertIcon"><i class="fas fa-exclamation-triangle"></i></div>
+            <h3 id="modalAlertTitle" class="modal-alert-title-error">CẢNH BÁO</h3>
+            <p id="modalAlertMessage">Thông báo lỗi.</p>
+            <button class="modal-alert-button" onclick="closeAlert()">OK</button>
+        </div>
+    </div>
+
+    <div id="confirmModal" style="display: none;">
+        <div class="modal-content-base">
+            <div class="modal-icon-confirm"><i class="fas fa-question-circle"></i></div>
+            <h3 id="modalConfirmTitle" class="modal-alert-title-confirm">XÁC NHẬN</h3>
+            <p id="modalConfirmMessage">Bạn có chắc muốn dừng tác vụ này?</p>
+            <div class="modal-btn-group">
+                <button class="modal-alert-button" style="background-color: #ff6347;" onclick="stopTask(currentTaskId)"><i class="fas fa-stop"></i> OK (DỪNG)</button>
+                <button class="modal-alert-button" style="background-color: #3b3a53;" onclick="closeConfirm()"><i class="fas fa-times"></i> Hủy</button>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        let currentTaskId = null;
+        let currentTaskType = 'P2V';
+        let allTasks = {};
+        let isDownloading = false;
+        let stopDownloadFlag = false;
+
+        // Dữ liệu schedule được truyền từ Flask
+        const schedule = {{ schedule | tojson }};
+        const isAllowedToRun = schedule.is_allowed;
+        const allowedTeam = schedule.allowed_team;
+        const todayDate = schedule.today_date;
+        
+        // NEW: Dữ liệu lịch sử được truyền từ Flask
+        const userHistory = {{ user_history | tojson }};
+
+        // --- CUSTOM MODAL FUNCTIONS ---
+        function showAlert(title, message) {
+            const modal = document.getElementById('customAlertModal');
+            const iconElement = document.getElementById('modalAlertIcon');
+            const titleElement = document.getElementById('modalAlertTitle');
+            const contentElement = modal.querySelector('.modal-content-base'); /* Sửa lỗi: Lấy đúng phần tử */
+            
+            titleElement.textContent = title;
+            document.getElementById('modalAlertMessage').textContent = message;
+
+            if (title.includes('LỖI') || title.includes('CHẾT')) {
+                iconElement.innerHTML = '<i class="fas fa-times-circle"></i>';
+                contentElement.style.border = '2px solid #ff6347';
+                titleElement.className = 'modal-alert-title-error';
+            } else {
+                iconElement.innerHTML = '<i class="fas fa-check-circle"></i>';
+                contentElement.style.border = '2px solid #4CAF50';
+                titleElement.className = 'modal-alert-title-success';
+            }
+
+            modal.style.display = 'flex';
+        }
+
+        function closeAlert() {
+            document.getElementById('customAlertModal').style.display = 'none';
+        }
+        
+        function showConfirm(taskId) {
+            if (!taskId || taskId === 'None') {
+                showAlert('LỖI DỪNG', 'Không có tác vụ nào đang hoạt động để dừng.');
+                return;
+            }
+            document.getElementById('modalConfirmMessage').textContent = `Bạn có chắc muốn dừng tác vụ ${taskId.substring(0, 8)}...?`;
+            document.getElementById('confirmModal').style.display = 'flex';
+        }
+
+        function closeConfirm() {
+            document.getElementById('confirmModal').style.display = 'none';
+        }
+        // --- END CUSTOM MODAL FUNCTIONS ---
+
+
+        function openTab(evt, tabName, taskType) {
+            currentTaskType = taskType;
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tab-button");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+            
+            if (tabName === 'history') {
+                loadUserHistory();
+            }
+        }
+        
+        function updatePromptCount(type) {
+            if (type === 'p2v') {
+                const prompts = document.getElementById('p2v_prompts').value.split('\n').map(p => p.trim()).filter(p => p.length > 0);
+                document.getElementById('p2v_summary').innerHTML = `<i class="fas fa-file-alt"></i> Tổng: ${prompts.length} prompts.`;
+            } else if (type === 'i2v') {
+                const files = document.getElementById('i2v_files').files;
+                document.getElementById('i2v_summary').innerHTML = `<i class="fas fa-file-alt"></i> Tổng: ${files.length} ảnh. Prompt cố định: 'slow zoom, slow motion'.`;
+            }
+        }
+
+        async function submitTask() {
+            if (!isAllowedToRun) {
+                showAlert("LỖI CHIA LỊCH", `Hôm nay (${todayDate}) thuộc Team ${allowedTeam} chạy tool. Bạn không được phép sử dụng chức năng GENERATE.`);
+                return;
+            }
+
+            const btn = document.getElementById('start_gen_btn');
+            const originalText = btn.innerHTML;
+            const promptInput = document.getElementById('p2v_prompts');
+            
+            btn.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Đang kiểm tra...';
+            btn.disabled = true;
+            promptInput.disabled = true; // Vô hiệu hóa input
+
+            // --- BƯỚC MỚI: KIỂM TRA TOKEN TRƯỚC KHI TẠO TÁC VỤ ---
+            const tokenCheckResponse = await fetch('/api/user/check_token_status');
+            const tokenCheckResult = await tokenCheckResponse.json();
+
+            if (tokenCheckResult.status === 'dead') {
+                showAlert("TOKEN ĐÃ CHẾT", `Token đang bị lỗi hoặc hết hạn: ${tokenCheckResult.message}. Vui lòng liên hệ Admin để cập nhật.`);
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                promptInput.disabled = false; // Kích hoạt lại input
+                return;
+            }
+            // --- END KIỂM TRA TOKEN ---
+
+
+            const resolution = document.getElementById('resolution').value;
+            let payload = { type: currentTaskType, resolution };
+            let totalItems = 0;
+            let initialItems = []; 
+            let tasks = [];
+
+            try {
+                if (currentTaskType === 'P2V') {
+                    const promptsText = promptInput.value;
+                    const prompts = promptsText.split('\n').map(p => p.trim()).filter(p => p.length > 0);
+                    if (prompts.length === 0) { throw new Error('Vui lòng nhập prompts.'); }
+                    payload.prompts = prompts;
+                    totalItems = prompts.length;
+                    initialItems = prompts.map(p => ({ prompt: p, status: 'Đang chờ', file: '' }));
+                    tasks = prompts;
+                    
+                } else if (currentTaskType === 'I2V') {
+                    const filesInput = document.getElementById('i2v_files');
+                    const files = filesInput.files;
+                    if (files.length === 0) { throw new Error('Vui lòng chọn ảnh.'); }
+                    
+                    // --- BƯỚC 1: UPLOAD FILE LÊN SERVER ---
+                    btn.innerHTML = '<i class="fas fa-upload"></i> Đang tải ảnh lên Server...';
+                    const uploadData = new FormData();
+                    Array.from(files).forEach(file => {
+                        uploadData.append('i2v_files', file);
+                    });
+
+                    const uploadResponse = await fetch('/api/upload_i2v', {
+                        method: 'POST',
+                        body: uploadData
+                    });
+                    const uploadResult = await uploadResponse.json();
+                    if (!uploadResult.success) {
+                        throw new Error(`Upload ảnh lỗi: ${uploadResult.message}`);
+                    }
+                    
+                    // --- BƯỚC 2: TẠO PAYLOAD TÁC VỤ VỚI ĐƯỜNG DẪN FILE SERVER ---
+                    tasks = uploadResult.file_paths.map(path => [path.split(/[\\/]/).pop(), 'slow zoom, slow motion']);
+                    payload.tasks = tasks;
+                    totalItems = tasks.length;
+                    
+                    // Khởi tạo items với tên file rút gọn (dùng cho hiển thị trên bảng)
+                    initialItems = tasks.map(t => ({ 
+                        image: t[0].split(/[\\/]/).pop(), 
+                        prompt: t[1], 
+                        status: 'Đang chờ', 
+                        file: '' 
+                    }));
+                    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Đang gửi tác vụ...';
+                }
+
+                // --- GỬI TÁC VỤ GENERATE ---
+                const response = await fetch('/api/submit_task', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    currentTaskId = result.task_id;
+                    showAlert("TÁC VỤ ĐƯỢC CHẤP NHẬN", result.message);
+                    
+                    // Thiết lập trạng thái ban đầu của task
+                    allTasks[currentTaskId] = {
+                        id: currentTaskId, 
+                        user: '{{ username }}', 
+                        status: 'Running', 
+                        progress: 0, 
+                        total: totalItems, 
+                        completed: 0, 
+                        errors: 0, 
+                        log: [`[LOG] ${result.message}`],
+                        type: currentTaskType,
+                        resolution: resolution,
+                        items: initialItems,
+                    };
+                    
+                    document.getElementById('current_task_id').textContent = currentTaskId.substring(0, 8) + '...';
+                    document.getElementById('task_log').innerHTML = ''; // Clear log
+                    updateTaskStatus(); 
+                } else {
+                     showAlert("LỖI KHỞI TẠO", result.message);
+                }
+            } catch (error) {
+                showAlert("LỖI KẾT NỐI", 'Không thể kết nối Server hoặc lỗi không xác định.');
+            }
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            promptInput.disabled = false; // Kích hoạt lại input nếu không thành công
+        }
+        
+        // Hàm tải file riêng lẻ
+        function downloadSingleFile(fileName, buttonElement) {
+            if (isDownloading) return; // Không cho tải file riêng lẻ khi đang tải hàng loạt
+            
+            const link = document.createElement('a');
+            link.href = `/downloads/${fileName}`;
+            link.download = fileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Vô hiệu hóa nút tải sau khi click
+            buttonElement.disabled = true;
+            buttonElement.textContent = 'Đã tải';
+            buttonElement.style.backgroundColor = '#3b3a53';
+            buttonElement.style.color = '#888888';
+            buttonElement.style.cursor = 'default';
+        }
+
+        // Logic tải hàng loạt
+        async function startDownloadAll(event) {
+            event.preventDefault();
+            if (isDownloading) return;
+
+            const allDownloadButtons = document.querySelectorAll('.download-btn[data-file]:not(:disabled)');
+            
+            const finishedButtons = Array.from(allDownloadButtons).filter(btn => 
+                btn.closest('tr').querySelector('.status-badge').textContent.includes('Hoàn thành')
+            );
+            
+            if (finishedButtons.length === 0) {
+                showAlert("THÔNG BÁO", "Không có video nào hoàn thành để tải về.");
+                return;
+            }
+
+            isDownloading = true;
+            stopDownloadFlag = false;
+            document.getElementById('btn_download_all').style.display = 'none';
+            document.getElementById('btn_stop_download').style.display = 'inline-block';
+            
+            const logBox = document.getElementById('task_log');
+            logBox.appendChild(document.createElement('div')).textContent = `--- BẮT ĐẦU TẢI HÀNG LOẠT (${finishedButtons.length} FILES) ---`;
+
+            for (const button of finishedButtons) {
+                if (stopDownloadFlag) {
+                    logBox.appendChild(document.createElement('div')).textContent = `--- DỪNG BỞI NGƯỜI DÙNG ---`;
+                    break;
+                }
+                
+                const fileName = button.getAttribute('data-file');
+                
+                button.textContent = 'Đang tải...';
+                button.style.backgroundColor = '#fec95a';
+                button.style.color = '#1a1a2e';
+
+                logBox.appendChild(document.createElement('div')).textContent = `[DL] Đang tải: ${fileName}`;
+
+                // Kích hoạt download
+                const iframe = document.createElement('iframe');
+                iframe.style.display = 'none';
+                iframe.src = `/downloads/${fileName}`;
+                document.body.appendChild(iframe);
+
+                // Chờ một khoảng thời gian để download bắt đầu
+                await new Promise(resolve => setTimeout(resolve, 3000)); 
+                document.body.removeChild(iframe);
+
+                // Vô hiệu hóa và đánh dấu là đã tải
+                button.disabled = true;
+                button.textContent = 'Đã tải';
+                button.style.backgroundColor = '#3b3a53';
+                button.style.color = '#888888';
+            }
+
+            isDownloading = false;
+            document.getElementById('btn_download_all').style.display = 'inline-block';
+            document.getElementById('btn_stop_download').style.display = 'none';
+            if (!stopDownloadFlag) {
+                logBox.appendChild(document.createElement('div')).textContent = `--- QUÁ TRÌNH TẢI ĐÃ KẾT THÚC ---`;
+            }
+        }
+        
+        function stopDownloadAll(event) {
+            event.preventDefault();
+            stopDownloadFlag = true;
+        }
+
+
+        function renderTable(task) {
+            const tableId = task.type === 'P2V' ? 'p2v_table_body' : 'i2v_table_body';
+            const tbody = document.getElementById(tableId);
+            tbody.innerHTML = '';
+
+            let completedCount = 0;
+
+            task.items.forEach((item, index) => {
+                const row = tbody.insertRow();
+                
+                const isFinished = item.status.includes('Finished');
+                const statusText = item.status.replace(/\s/g, ''); 
+                const statusClass = statusText.includes('Finished') ? 'status-Finished' : statusText.includes('Error') || statusText.includes('Stopped') ? 'status-Error' : statusText.includes('Running') ? 'status-Running' : 'status-Pending';
+
+                // --- CHỌN ICON DỰA TRÊN TRẠNG THÁI ---
+                let iconHTML = '';
+                if (statusClass.includes('Finished')) {
+                    iconHTML = '<i class="fas fa-check-circle"></i> ';
+                } else if (statusClass.includes('Error') || statusClass.includes('Stopped')) {
+                    iconHTML = '<i class="fas fa-times-circle"></i> ';
+                } else if (statusClass.includes('Running')) {
+                    iconHTML = '<i class="fas fa-cogs fa-spin"></i> ';
+                } else if (statusClass.includes('Pending')) {
+                    iconHTML = '<i class="fas fa-hourglass-start"></i> ';
+                }
+
+                // Chuyển trạng thái English sang Vietnamese cho hiển thị
+                const displayStatus = item.status.replace('Finished', 'Hoàn thành').replace('Error', 'Lỗi').replace('Running', 'Đang xử lý').replace('Stopped', 'Đã dừng').replace('Initializing', 'Khởi tạo').replace('Pending', 'Đang chờ');
+                
+                // Tạo nút tải riêng lẻ
+                let downloadButtonHTML = '';
+                if (item.file) {
+                    const downloadBtnId = `dl_${task.id}_${index}`;
+                    
+                    downloadButtonHTML = `
+                        <button 
+                            id="${downloadBtnId}"
+                            class="download-btn"
+                            data-file="${item.file}"
+                            data-status="${item.status}"
+                            onclick="downloadSingleFile('${item.file}', this)"
+                            ${!isFinished ? 'disabled' : ''}
+                        >
+                            ${isFinished ? '<i class="fas fa-download"></i> Tải về' : 'Chờ'}
+                        </button>
+                    `;
+                    
+                    if(isFinished) completedCount++;
+                }
+
+                if (task.type === 'P2V') {
+                    row.innerHTML = `
+                        <td>${item.prompt ? item.prompt.substring(0, 70) + (item.prompt.length > 70 ? '...' : '') : 'N/A'}</td>
+                        <td><span class="status-badge ${statusClass}">${iconHTML}${displayStatus}</span></td>
+                        <td>${downloadButtonHTML}</td>
+                    `;
+                } else { // I2V
+                    row.innerHTML = `
+                        <td>${item.image}</td>
+                        <td>${item.prompt}</td>
+                        <td><span class="status-badge ${statusClass}">${iconHTML}${displayStatus}</span></td>
+                        <td>${downloadButtonHTML}</td>
+                    `;
+                }
+            });
+            
+            // Cập nhật trạng thái nút Download All
+            document.getElementById('btn_download_all').disabled = completedCount === 0 || isDownloading;
+            document.getElementById('btn_download_all').style.display = isDownloading ? 'none' : 'inline-block';
+            document.getElementById('btn_stop_download').style.display = isDownloading ? 'inline-block' : 'none';
+        }
+
+
+        async function updateTaskStatus() {
+            try {
+                const response = await fetch('/api/get_tasks');
+                const fetchedTasks = await response.json();
+                allTasks = fetchedTasks; 
+
+                let activeTask = null;
+                const taskList = Object.values(allTasks).sort((a, b) => {
+                    const timeA = a.log.length > 0 ? a.log[0].substring(1, 9) : '00:00:00';
+                    const timeB = b.log.length > 0 ? b.log[0].substring(1, 9) : '00:00:00';
+                    return timeB.localeCompare(timeA);
+                });
+                
+                if (currentTaskId && allTasks[currentTaskId]) {
+                    activeTask = allTasks[currentTaskId];
+                } else if (taskList.length > 0) {
+                    activeTask = taskList[0];
+                    currentTaskId = activeTask.id;
+                }
+
+                if (activeTask) {
+                    document.getElementById('current_task_id').textContent = activeTask.id.substring(0, 8) + '...';
+                    
+                    const statusClass = activeTask.status.replace(/\s/g, '').replace(/[^a-zA-Z]/g, '');
+                    const displayStatus = activeTask.status.replace('Finished', 'Hoàn thành').replace('Error', 'Lỗi').replace('Running', 'Đang chạy').replace('Initializing', 'Khởi tạo').replace('Stopped', 'Đã dừng');
+                    
+                    document.getElementById('overall_status').innerHTML = `
+                        <i class="fas fa-chart-line"></i> Trạng thái chung: 
+                        <span class="status-badge status-${statusClass}">${displayStatus}</span> | 
+                        Tiến độ: ${activeTask.completed}/${activeTask.total} (${activeTask.progress}%) |
+                        Loại: ${activeTask.type} (${activeTask.resolution})
+                    `;
+                    
+                    // Update Log
+                    const logBox = document.getElementById('task_log');
+                    const currentLogCount = logBox.children.length;
+                    const newLog = activeTask.log;
+
+                    // Chỉ thêm các dòng log mới
+                    for (let i = currentLogCount; i < newLog.length; i++) {
+                        const logLine = document.createElement('div');
+                        logLine.textContent = newLog[i];
+                        logBox.appendChild(logLine);
+                    }
+                    logBox.scrollTop = logBox.scrollHeight; 
+
+                    // Update Table (chỉ render bảng của task đang active)
+                    const activeTabId = document.querySelector('.tab-button.active').getAttribute('onclick').match(/'([^']+)'/)[1];
+                    const activeTabType = activeTabId.toUpperCase();
+                    
+                    if (activeTabType === activeTask.type) {
+                        renderTable(activeTask);
+                    }
+                } else {
+                    document.getElementById('overall_status').innerHTML = '<i class="fas fa-check-circle"></i> Trạng thái chung: Không có tác vụ nào.';
+                    // Clear tables if no active task
+                    document.getElementById('p2v_table_body').innerHTML = '';
+                    document.getElementById('i2v_table_body').innerHTML = '';
+                    document.getElementById('btn_download_all').disabled = true;
+                }
+
+            } catch (error) {
+                console.error('Lỗi tải trạng thái tác vụ:', error);
+            }
+        }
+        
+        function stopTask(taskId) {
+            closeConfirm(); // Đóng hộp thoại xác nhận
+            if (!taskId) {
+                showAlert("LỖI", "Không có tác vụ nào đang được chọn.");
+                return;
+            }
+            
+            fetch(`/api/stop_task/${taskId}`, { method: 'POST' })
+                .then(response => response.json())
+                .then(data => showAlert("TÁC VỤ DỪNG", data.message));
+        }
+
+        // --- LOAD HISTORY LOGIC ---
+        async function loadUserHistory() {
+            const username = '{{ username }}';
+            
+            try {
+                // Sử dụng dữ liệu được truyền từ Flask (được làm sạch JSON)
+                const historyByDate = userHistory; 
+                
+                const historyContainer = document.getElementById('history-container');
+                historyContainer.innerHTML = '';
+                
+                const sortedDates = Object.keys(historyByDate).sort().reverse(); 
+
+                if (sortedDates.length === 0) {
+                    historyContainer.innerHTML = '<p style="color: #8a2be2;"><i class="fas fa-box-open"></i> Chưa có lịch sử chạy nào được ghi nhận.</p>';
+                    return;
+                }
+
+                for (const dateStr of sortedDates) {
+                    const dayCard = document.createElement('div');
+                    dayCard.className = 'history-day-card';
+                    
+                    const tasksToday = historyByDate[dateStr];
+                    
+                    let finishedCount = tasksToday.filter(t => t.status.includes('Finished')).length;
+                    let totalCount = tasksToday.length;
+
+                    dayCard.innerHTML = `
+                        <h4><i class="fas fa-calendar-alt"></i> Ngày: ${dateStr} 
+                        <span class="status-badge status-Finished">${finishedCount}/${totalCount} Hoàn thành</span></h4>
+                    `;
+                    
+                    const ul = document.createElement('ul');
+                    tasksToday.forEach(task => {
+                        const statusText = task.status.replace(/\s/g, ''); 
+                        const statusClass = statusText.includes('Finished') ? 'status-Finished' : statusText.includes('Error') || statusText.includes('Stopped') ? 'status-Error' : 'status-Running';
+                        const icon = statusText.includes('Finished') ? '<i class="fas fa-check-circle"></i>' : '<i class="fas fa-times-circle"></i>';
+                        
+                        const li = document.createElement('li');
+                        li.className = 'history-item';
+                        
+                        // Tạo nút tải riêng lẻ cho lịch sử
+                        const downloadBtn = task.items && task.items.length > 0 && task.items.every(i => i.file) ? 
+                            `<button class="download-btn" onclick="showAlert('Tải Lịch Sử', 'Xin lỗi, chức năng tải toàn bộ file từ lịch sử hiện chưa được hỗ trợ. Vui lòng tải từ bảng trạng thái chính.')"><i class="fas fa-download"></i> Tải về (${task.items.length} files)</button>` : '';
+
+                        const displayStatus = task.status.replace('Finished', 'Hoàn thành').replace('Error', 'Lỗi').replace('Running', 'Đang chạy').replace('Initializing', 'Khởi tạo').replace('Stopped', 'Đã dừng');
+
+                        li.innerHTML = `
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <span style="font-weight: bold; margin-right: 10px;">[${task.time}]</span> 
+                                    <span class="status-badge ${statusClass}">${icon} ${displayStatus}</span> 
+                                    <code style="margin-left: 10px;">${task.type} (${task.total} items)</code>
+                                </div>
+                                <div>${downloadBtn}</div>
+                            </div>
+                            <p style="font-size: 12px; margin: 5px 0 0 0; color: #8a2be2;">Task ID: ${task.task_id.substring(0, 8)}... | ${task.resolution}</p>
+                        `;
+                        ul.appendChild(li);
+                    });
+                    
+                    dayCard.appendChild(ul);
+                    historyContainer.appendChild(dayCard);
+                }
+
+            } catch (e) {
+                console.error("Error loading history:", e);
+                document.getElementById('history-container').innerHTML = '<p style="color: #ff6347;">Lỗi tải lịch sử. Vui lòng kiểm tra console.</p>';
+            }
+        }
+        // --- END LOAD HISTORY LOGIC ---
+
+        // Chạy cập nhật trạng thái mỗi 3 giây
+        setInterval(updateTaskStatus, 3000);
+        
+        // Chạy kiểm tra quyền mỗi 10 giây
+        setInterval(checkAccess, 10000); 
+
+        document.addEventListener('DOMContentLoaded', () => {
+            checkAccess(); 
+            updateTaskStatus(); 
+            
+            const defaultButton = document.querySelector('.tab-button.active');
+            if(defaultButton) {
+                defaultButton.click();
+            }
+            updatePromptCount('p2v');
+        });
+
+    </script>
+</body>
+</html>

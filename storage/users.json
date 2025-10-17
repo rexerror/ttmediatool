@@ -1,0 +1,501 @@
+{
+    "admin": {
+        "username": "admin",
+        "password_hash": "scrypt:32768:8:1$i9FVOEtQfZ4KA2Ej$04e753c605a90e8d372879f9886eb83a66d6b6187517db525819daf3ab76edad5276694aaf591f0900b8dbd691bec88dbab0aa2bc13804b35258e9d5785c1a71",
+        "name": "Nguy\u1ec5n \u0110\u1ee9c Th\u1eafng (Admin)",
+        "team": "Development",
+        "is_admin": true,
+        "created_at": "2025-10-17 19:07:45.156488"
+    },
+    "ndthng": {
+        "username": "ndthng",
+        "name": "Kh\u00e1nh Linh",
+        "team": "Team L\u00ea Th\u1eafng",
+        "is_admin": false,
+        "history": {
+            "2025-10-17": [
+                {
+                    "task_id": "77108dc2-8967-446d-940e-0c07799f6b8b",
+                    "time": "20:16:34",
+                    "status": "Kh\u1edfi t\u1ea1o"
+                },
+                {
+                    "task_id": "d024c03d-dd45-428b-ab44-d297c64611cd",
+                    "time": "20:19:56",
+                    "status": "Kh\u1edfi t\u1ea1o"
+                },
+                {
+                    "task_id": "afd67228-db40-402f-a152-18b165a8ef7f",
+                    "time": "20:20:37",
+                    "status": "Kh\u1edfi t\u1ea1o"
+                },
+                {
+                    "task_id": "ba091dcd-ea4b-4822-a976-e0b308465eb5",
+                    "time": "20:27:29",
+                    "status": "Kh\u1edfi t\u1ea1o"
+                },
+                {
+                    "task_id": "ba091dcd-ea4b-4822-a976-e0b308465eb5",
+                    "time": "20:28:08",
+                    "status": "\u0110\u00e3 d\u1eebng"
+                },
+                {
+                    "task_id": "ba091dcd-ea4b-4822-a976-e0b308465eb5",
+                    "time": "20:28:15",
+                    "status": "\u0110\u00e3 d\u1eebng"
+                },
+                {
+                    "task_id": "024f6d75-ed65-47b8-ae83-eae4cf0c76fe",
+                    "time": "20:31:04",
+                    "status": "Kh\u1edfi t\u1ea1o"
+                },
+                {
+                    "task_id": "024f6d75-ed65-47b8-ae83-eae4cf0c76fe",
+                    "time": "20:37:11",
+                    "status": "\u0110\u00e3 d\u1eebng"
+                },
+                {
+                    "task_id": "c25e592c-5b54-43f5-bbaa-3c4e5d87d3fb",
+                    "time": "20:50:48",
+                    "status": "Kh\u1edfi t\u1ea1o"
+                },
+                {
+                    "task_id": "c25e592c-5b54-43f5-bbaa-3c4e5d87d3fb",
+                    "time": "20:51:48",
+                    "status": "\u0110\u00e3 d\u1eebng"
+                },
+                {
+                    "task_id": "59f5e145-f0a5-4bed-8e5e-7162a5266557",
+                    "time": "20:54:18",
+                    "status": "Kh\u1edfi t\u1ea1o"
+                },
+                {
+                    "task_id": "564d7146-ba07-4dac-83dc-b025cfadcd60",
+                    "time": "20:59:46",
+                    "status": "Kh\u1edfi t\u1ea1o",
+                    "type": "P2V",
+                    "resolution": "720p",
+                    "total": 16,
+                    "items": [
+                        {
+                            "prompt": "Colorful coral reef teeming with angelfish and butterflyfish, HDR, radiant blue tones",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Soft light beams shining through ocean surface onto coral reef, HDR",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Underwater fantasy coral city, glowing fish and sea plants, HDR surreal",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Bright coral scene with bubbles rising and light scattering, HDR, macro realism",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "A dense coral reef wall with exotic fish, HDR ultra-detailed photography",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Underwater paradise, colorful marine life, HDR, wide-angle lens effect",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Golden sunlight breaking through water illuminating coral reef, HDR photorealism",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Coral reef ecosystem viewed from below, HDR dynamic lighting, color explosion",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Tropical underwater coral scene with fish swimming around soft corals, HDR clarity",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Deep blue ocean floor with coral colonies, HDR cinematic depth",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Vibrant underwater world with orange and pink corals, HDR, soft sunlight rays",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Sea floor filled with colorful corals, schools of yellow fish, HDR high contrast",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "HDR close-up of clownfish among bright anemones in coral reef",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Bright turquoise reef, sun rays filtering, vivid corals and fish, HDR",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Underwater coral ridge full of fish, HDR detail, photorealistic lighting",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Neon coral forest, blue and purple light reflections underwater, H",
+                            "status": "Pending",
+                            "file": ""
+                        }
+                    ]
+                },
+                {
+                    "task_id": "d66f4e4c-1c6b-46bb-8499-9943a5b99c0d",
+                    "time": "21:02:41",
+                    "status": "\u0110\u00e3 d\u1eebng",
+                    "type": "P2V",
+                    "resolution": "720p",
+                    "total": 20,
+                    "items": [
+                        {
+                            "prompt": "Deep ocean coral ridge glowing in blue and green tones, HDR vivid rendering",
+                            "status": "Error",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Panoramic view of coral reef ecosystem, HDR, detailed biodiversity",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Colorful coral reef teeming with angelfish and butterflyfish, HDR, radiant blue tones",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Soft light beams shining through ocean surface onto coral reef, HDR",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Underwater fantasy coral city, glowing fish and sea plants, HDR surreal",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Bright coral scene with bubbles rising and light scattering, HDR, macro realism",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "A dense coral reef wall with exotic fish, HDR ultra-detailed photography",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Underwater paradise, colorful marine life, HDR, wide-angle lens effect",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Golden sunlight breaking through water illuminating coral reef, HDR photorealism",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Coral reef ecosystem viewed from below, HDR dynamic lighting, color explosion",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Tropical underwater coral scene with fish swimming around soft corals, HDR clarity",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Deep blue ocean floor with coral colonies, HDR cinematic depth",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Vibrant underwater world with orange and pink corals, HDR, soft sunlight rays",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Sea floor filled with colorful corals, schools of yellow fish, HDR high contrast",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "HDR close-up of clownfish among bright anemones in coral reef",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Bright turquoise reef, sun rays filtering, vivid corals and fish, HDR",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Underwater coral ridge full of fish, HDR detail, photorealistic lighting",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Neon coral forest, blue and purple light reflections underwater, HDR cinematic",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Ocean coral landscape with sea turtle and tropical fish, HDR vibrant tones",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Dreamlike underwater coral garden, glowing fish, HDR, multi-color reflections",
+                            "status": "Stopped",
+                            "file": ""
+                        }
+                    ]
+                },
+                {
+                    "task_id": "002a258f-c06c-4669-9526-4ce16cf0722d",
+                    "time": "21:05:51",
+                    "status": "\u0110\u00e3 d\u1eebng",
+                    "type": "P2V",
+                    "resolution": "720p",
+                    "total": 19,
+                    "items": [
+                        {
+                            "prompt": "Soft light beams shining through ocean surface onto coral reef, HDR",
+                            "status": "Error",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Underwater fantasy coral city, glowing fish and sea plants, HDR surreal",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Bright coral scene with bubbles rising and light scattering, HDR, macro realism",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "A dense coral reef wall with exotic fish, HDR ultra-detailed photography",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Underwater paradise, colorful marine life, HDR, wide-angle lens effect",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Golden sunlight breaking through water illuminating coral reef, HDR photorealism",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Coral reef ecosystem viewed from below, HDR dynamic lighting, color explosion",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Tropical underwater coral scene with fish swimming around soft corals, HDR clarity",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Deep blue ocean floor with coral colonies, HDR cinematic depth",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Vibrant underwater world with orange and pink corals, HDR, soft sunlight rays",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Sea floor filled with colorful corals, schools of yellow fish, HDR high contrast",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "HDR close-up of clownfish among bright anemones in coral reef",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Bright turquoise reef, sun rays filtering, vivid corals and fish, HDR",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Underwater coral ridge full of fish, HDR detail, photorealistic lighting",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Neon coral forest, blue and purple light reflections underwater, HDR cinematic",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Ocean coral landscape with sea turtle and tropical fish, HDR vibrant tones",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Dreamlike underwater coral garden, glowing fish, HDR, multi-color reflections",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Colorful coral reef panorama, sunlight scattering through clear water, HDR",
+                            "status": "Stopped",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Tropical coral scene with parrotfish and angelfish, HDR ultra-vivid tones",
+                            "status": "Stopped",
+                            "file": ""
+                        }
+                    ]
+                },
+                {
+                    "task_id": "adfecf42-e613-4960-ac99-c0d48135cdf0",
+                    "time": "21:18:58",
+                    "status": "\u0110\u00e3 d\u1eebng",
+                    "type": "P2V",
+                    "resolution": "720p",
+                    "total": 20,
+                    "items": [
+                        {
+                            "prompt": "Colorful coral reef teeming with angelfish and butterflyfish, HDR, radiant blue tones",
+                            "status": "Finished",
+                            "file": "720p_Colorful_coral_reef_teeming_with_angelfish_and_but_prompt_1_b58bb1.mp4"
+                        },
+                        {
+                            "prompt": "Soft light beams shining through ocean surface onto coral reef, HDR",
+                            "status": "Error",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Underwater fantasy coral city, glowing fish and sea plants, HDR surreal",
+                            "status": "Finished",
+                            "file": "720p_Underwater_fantasy_coral_city,_glowing_fish_and_se_prompt_3_de7844.mp4"
+                        },
+                        {
+                            "prompt": "Bright coral scene with bubbles rising and light scattering, HDR, macro realism",
+                            "status": "Running",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "A dense coral reef wall with exotic fish, HDR ultra-detailed photography",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Underwater paradise, colorful marine life, HDR, wide-angle lens effect",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Golden sunlight breaking through water illuminating coral reef, HDR photorealism",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Coral reef ecosystem viewed from below, HDR dynamic lighting, color explosion",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Tropical underwater coral scene with fish swimming around soft corals, HDR clarity",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Deep blue ocean floor with coral colonies, HDR cinematic depth",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Vibrant underwater world with orange and pink corals, HDR, soft sunlight rays",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Sea floor filled with colorful corals, schools of yellow fish, HDR high contrast",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "HDR close-up of clownfish among bright anemones in coral reef",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Bright turquoise reef, sun rays filtering, vivid corals and fish, HDR",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Underwater coral ridge full of fish, HDR detail, photorealistic lighting",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Neon coral forest, blue and purple light reflections underwater, HDR cinematic",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Ocean coral landscape with sea turtle and tropical fish, HDR vibrant tones",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Dreamlike underwater coral garden, glowing fish, HDR, multi-color reflections",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Colorful coral reef panorama, sunlight scattering through clear water, HDR",
+                            "status": "Pending",
+                            "file": ""
+                        },
+                        {
+                            "prompt": "Tropical coral scene with parrotfish and angelfish, HDR ultra-vivid tones",
+                            "status": "Pending",
+                            "file": ""
+                        }
+                    ]
+                }
+            ]
+        },
+        "created_at": "2025-10-17 19:49:11.011841",
+        "password_hash": "scrypt:32768:8:1$ymxUQ7M4gBOlJ257$7e6e893f46d67f435a6894dec631c19853721b87f9ff25dc4ead5da4960885a07114b31531a12d16bd7e5743ff0d7cb3d414015804300819253163aa24a1b699"
+    },
+    "rexerror": {
+        "username": "rexerror",
+        "name": "Nguy\u1ec5n \u0110\u1ee9c Th\u1eafng",
+        "team": "Team L\u00ea C\u01b0\u1eddng",
+        "is_admin": false,
+        "history": {},
+        "created_at": "2025-10-17 19:49:20.585172",
+        "password_hash": "scrypt:32768:8:1$sOCcDCb3DkIeyytk$0243463dd5e0664708bace051b89d1a31dee8219962513d3be8f9e59a6c53eeb3cdc5859f7f3ed85a297b1db0f561cf838d61f71582815cfbc00e51e111929a7"
+    }
+}
