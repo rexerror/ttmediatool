@@ -1,71 +1,606 @@
-<div class="card">
-    <h2><i class="fas fa-chart-bar"></i> Thống kê Hoạt động</h2>
-    <div class="form-group" style="margin-top: 30px;">
-        <h2><i class="fas fa-cookie-bite"></i> Cấu hình Cookie</h2>
-        <p>Trạng thái Cookie hiện tại: 
-            <span id="cookie_status_span" class="status-badge {% if 'Đã tải' in cookie_status %}status-Finished{% else %}status-Error{% endif %}">
-                {{ cookie_status }}
-            </span>
-        </p>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - Nguyễn Đức Thắng</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500;1,600;1,700&display=swap');
+
+        /* CSS mô phỏng QSS_STYLE gốc */
+        body { 
+            font-family: 'Chakra Petch', sans-serif; 
+            background-color: #1a1a2e; 
+            color: #e0e0e0; 
+            padding: 20px; 
+        }
+        .container { max-width: 1400px; margin: auto; }
         
-        <div class="cookie-check-area">
-            <button id="btn_check_cookie" onclick="checkCookieLiveStatus()"><i class="fas fa-sync-alt"></i> Kiểm tra Live Token</button>
-            <span id="live_status_display" class="live-status live-unknown">Chưa kiểm tra</span>
+        /* GENERAL CARD/SECTION STYLING */
+        .card { background-color: #2e2e4a; padding: 25px; border-radius: 10px; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); border: 1px solid #6a0dad; }
+        .card h2 { color: #fec95a; margin-top: 0; font-size: 20px; border-bottom: 1px dashed #3b3a53; padding-bottom: 10px; margin-bottom: 15px; }
+
+        /* HEADER & USER DROPDOWN */
+        .header-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 2px solid #6a0dad; padding-bottom: 10px; }
+        h1 { color: #6a0dad; font-size: 28px; margin: 0; }
+
+        .user-dropdown-container { position: relative; display: inline-block; }
+        .user-dropdown-btn {
+            background-color: #2e2e4a; color: #8a2be2; padding: 10px 15px; border: 1px solid #8a2be2; border-radius: 8px;
+            font-weight: bold; cursor: pointer; transition: background-color 0.2s; font-family: 'Chakra Petch', sans-serif;
+        }
+        .user-dropdown-btn:hover { background-color: #3b3a53; }
+        
+        .dropdown-content {
+            display: none; position: absolute; right: 0; background-color: #1a1a2e; min-width: 280px;
+            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.5); z-index: 10; border-radius: 8px; border: 1px solid #6a0dad;
+            margin-top: 5px; overflow: hidden;
+        }
+        .dropdown-content a, .dropdown-content div {
+            color: #e0e0e0; padding: 12px 16px; text-decoration: none; display: block; font-size: 14px;
+            border-bottom: 1px solid #3b3a53;
+        }
+        .dropdown-content a:hover { background-color: #5d00a3; color: white; }
+        .dropdown-content .info-item-header { background-color: #3b3a53; font-weight: bold; color: #fec95a; padding: 15px 16px; }
+        .dropdown-content a.logout { color: #ff6347; font-weight: bold; }
+        .dropdown-content a.logout:hover { background-color: #ff6347; color: white; }
+        .user-dropdown-container:focus-within .dropdown-content { display: block; }
+        
+        .info-item { display: flex; align-items: center; gap: 10px; margin-bottom: 5px; font-size: 14px; }
+        .info-item i { color: #8a2be2; width: 15px; text-align: center; }
+
+
+        /* BUTTONS */
+        button { 
+            background-color: #6a0dad; color: white; padding: 8px 15px; border: none; border-radius: 6px; 
+            font-weight: bold; cursor: pointer; transition: background-color 0.2s; font-size: 13px; 
+            font-family: 'Chakra Petch', sans-serif; 
+        }
+        button:hover:enabled { background-color: #8a2be2; }
+        button:disabled { background-color: #3b3a53; color: #888; cursor: not-allowed; }
+        .btn-icon { background: none; color: #8a2be2; padding: 5px; margin: 0 3px; }
+        .btn-icon:hover { color: #fff; background-color: #5d00a3; }
+        .btn-delete { background-color: #ff6347; }
+        .btn-delete:hover:enabled { background-color: #d32f2f; }
+        
+        /* FORMS & INPUTS */
+        input[type="text"], input[type="password"], select, textarea { 
+            padding: 10px; border: 1px solid #6a0dad; border-radius: 5px; background-color: #3b3a53; 
+            color: #e0e0e0; margin-right: 10px; box-sizing: border-box;
+            font-family: 'Chakra Petch', sans-serif; 
+        }
+        #userTeam { width: 100%; }
+        #cookie_text { width: 100%; resize: vertical; background-color: #1a1a2e; color: white; font-family: monospace; } /* FIX: Thiết kế cho textarea */
+
+
+        .form-group { margin-bottom: 15px; }
+        
+        /* TÙY CHỈNH INPUT FILE CỦA ADMIN */
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-flex; 
+            align-items: center;
+            gap: 8px;
+            background-color: #5d00a3; 
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+            margin-right: 10px; 
+            min-height: 38px;
+        }
+        .file-input-wrapper:hover {
+            background-color: #8a2be2;
+        }
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+            height: 100%;
+            width: 100%;
+        }
+
+
+        /* TABLE STYLING */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { background-color: #3b3a53; color: #ffffff; padding: 12px; text-align: left; border: 1px solid #3b3a53; }
+        td { padding: 12px; border-bottom: 1px solid #3b3a53; }
+        
+        /* STATUS BADGES */
+        .status-badge { padding: 5px 10px; border-radius: 5px; font-weight: bold; font-size: 12px; white-space: nowrap; }
+        .status-Finished { background-color: #4CAF50; }
+        .status-Running, .status-Initializing { background-color: #fec95a; color: #1a1a2e; }
+        .status-Error, .status-Stopped { background-color: #ff6347; }
+        
+        /* COOKIE STATUS DISPLAY */
+        .cookie-check-area { display: flex; align-items: center; gap: 10px; margin-top: 15px; }
+        .live-status { font-weight: bold; }
+        .live-live { color: #4CAF50; }
+        .live-dead { color: #ff6347; }
+        .live-unknown { color: #fec95a; }
+        
+        /* FLEX LAYOUT */
+        .main-layout { display: grid; grid-template-columns: 3fr 1fr; gap: 30px; }
+        .user-mgmt-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        
+        /* USER ONLINE TABLE */
+        #active_users_table { margin-top: 15px; font-size: 13px; }
+        #active_users_table td, #active_users_table th { padding: 8px; }
+        .online-dot { 
+            height: 10px; width: 10px; background-color: #4CAF50; border-radius: 50%; display: inline-block; 
+            margin-right: 5px;
+        }
+
+
+        /* MODAL STYLING (POP-UP) */
+        .modal {
+            display: none; position: fixed; z-index: 100; left: 0; top: 0; width: 100%; height: 100%;
+            overflow: auto; background-color: rgba(0,0,0,0.7); 
+        }
+        .modal-content {
+            background-color: #1a1a2e; margin: 10% auto; padding: 25px; border: 2px solid #6a0dad; 
+            width: 80%; max-width: 500px; border-radius: 10px; position: relative;
+        }
+        .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; }
+        .close-btn:hover, .close-btn:focus { color: #fff; text-decoration: none; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header-row">
+            <h1><i class="fas fa-tools"></i> Admin Console</h1>
+            <div class="user-dropdown-container" tabindex="0">
+                <button class="user-dropdown-btn">
+                    <i class="fas fa-user-shield"></i> {{ admin_name }} <i class="fas fa-caret-down"></i>
+                </button>
+                <div class="dropdown-content">
+                    <div class="info-item-header">THÔNG TIN ADMIN</div>
+                    <div style="padding: 10px 16px;">
+                        <div class="info-item"><i class="fas fa-id-badge"></i> User: **{{ session.username }}**</div>
+                        <div class="info-item"><i class="fas fa-crown"></i> Quyền: Admin</div>
+                    </div>
+                    <a href="{{ url_for('logout') }}" class="logout"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                </div>
+            </div>
+            </div>
+
+        <div class="main-layout">
+            <div class="card">
+                <h2><i class="fas fa-users-cog"></i> Quản lý Người dùng</h2>
+                <div class="user-mgmt-layout">
+                    <button onclick="openUserModal('add')" style="width: 100%; margin-bottom: 15px;"><i class="fas fa-user-plus"></i> Thêm User Mới</button>
+                    <div style="grid-column: 1 / 3; overflow-x: auto;">
+                        <table id="users_table">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-user"></i> Tài khoản</th>
+                                    <th>Tên hiển thị</th>
+                                    <th>Team</th>
+                                    <th>Quyền</th>
+                                    <th>Hành động</th>
+                                </tr>
+                            </thead>
+                            <tbody id="users_body">
+                                {% for user in users %}
+                                    <tr>
+                                        <td>{{ user.username }}</td>
+                                        <td>{{ user.name }}</td>
+                                        <td>{{ user.team }}</td>
+                                        <td><span class="status-badge {% if user.is_admin %}status-Error{% else %}status-Finished{% endif %}">{{ "ADMIN" if user.is_admin else "USER" }}</span></td>
+                                        <td>
+                                            <button class="btn-icon" onclick="openUserModal('edit', '{{ user.username }}', '{{ user.name }}', '{{ user.team }}')"><i class="fas fa-edit"></i></button>
+                                            {% if user.username != session.username %}
+                                                <button class="btn-icon btn-delete" onclick="deleteUser('{{ user.username }}')"><i class="fas fa-trash-alt"></i></button>
+                                            {% else %}
+                                                <span style="color: #fec95a; font-size: 12px;">(Bạn)</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2><i class="fas fa-chart-bar"></i> Thống kê Hoạt động</h2>
+
+                <div class="form-group">
+                    <p style="font-weight: bold; margin-bottom: 5px;"><i class="fas fa-plug"></i> User Online: <span id="online_count" style="color: #4CAF50;">0</span></p>
+                    <table id="active_users_table">
+                        <thead>
+                            <tr>
+                                <th><i class="fas fa-user"></i> User</th>
+                                <th>Team</th>
+                                <th>Hoạt động cuối</th>
+                            </tr>
+                        </thead>
+                        <tbody id="active_users_body">
+                            </tbody>
+                    </table>
+                </div>
+                <div id="user_stats_section">
+                    <p style="font-weight: bold; margin-bottom: 10px; margin-top: 20px;"><i class="fas fa-tasks"></i> Chi tiết Tác vụ theo User:</p>
+                    <table style="font-size: 13px;">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Tổng</th>
+                                <th style="color: #4CAF50;"><i class="fas fa-check-circle"></i> Hoàn thành</th>
+                                <th style="color: #fec95a;"><i class="fas fa-cog"></i> Đang chạy</th>
+                                <th style="color: #ff6347;"><i class="fas fa-times-circle"></i> Lỗi/Dừng</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stats_body">
+                            </tbody>
+                    </table>
+                </div>
+                
+                <div class="form-group" style="margin-top: 30px;">
+                    <h2><i class="fas fa-cookie-bite"></i> Cấu hình Cookie</h2>
+                    <p>Trạng thái Cookie hiện tại: 
+                        <span id="cookie_status_span" class="status-badge {% if 'Đã tải' in cookie_status %}status-Finished{% else %}status-Error{% endif %}">
+                            {{ cookie_status }}
+                        </span>
+                    </p>
+                    
+                    <div class="cookie-check-area">
+                        <button id="btn_check_cookie" onclick="checkCookieLiveStatus()"><i class="fas fa-sync-alt"></i> Kiểm tra Live Token</button>
+                        <span id="live_status_display" class="live-status live-unknown">Chưa kiểm tra</span>
+                    </div>
+                    <form id="upload_form" style="margin-top: 15px;">
+                        <label for="cookie_text" style="display: block; font-weight: bold; margin-bottom: 5px;"><i class="fas fa-file-code"></i> Dán chuỗi Cookie JSON:</label>
+                        <textarea id="cookie_text" name="cookie_text" rows="8" placeholder="Dán nội dung file cookie.json vào đây..." 
+                                  style="width: 100%; resize: vertical; background-color: #1a1a2e; color: white; border: 1px solid #6a0dad; padding: 10px; box-sizing: border-box; font-family: monospace;"></textarea>
+                        
+                        <button type="submit" style="width: 100%; margin-top: 10px;"><i class="fas fa-save"></i> Lưu & Cập nhật Cookie</button>
+                    </form>
+                    <p id="upload_message" style="margin-top: 10px; font-weight: bold;"></p>
+                </div>
+                
+            </div>
         </div>
-        <form id="upload_form" style="margin-top: 15px;">
-            <label for="cookie_text" style="display: block; font-weight: bold; margin-bottom: 5px;"><i class="fas fa-file-code"></i> Dán chuỗi Cookie JSON:</label>
-            <textarea id="cookie_text" name="cookie_text" rows="8" placeholder="Dán nội dung file cookie.json vào đây..." 
-                      style="width: 100%; resize: vertical; background-color: #1a1a2e; color: white; border: 1px solid #6a0dad; padding: 10px; box-sizing: border-box; font-family: monospace;"></textarea>
-            
-            <button type="submit" style="width: 100%; margin-top: 10px;"><i class="fas fa-save"></i> Lưu & Cập nhật Cookie</button>
-        </form>
-        <p id="upload_message" style="margin-top: 10px; font-weight: bold;"></p>
+
+
+        <div class="card">
+            <h2><i class="fas fa-clipboard-list"></i> Danh sách Tác vụ Tổng quát</h2>
+            <div style="overflow-x: auto;">
+                <table id="tasks_table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>User</th>
+                            <th>Loại</th>
+                            <th>Độ phân giải</th>
+                            <th>Tiến độ</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tasks_body">
+                        {% for id, task in tasks.items() %}
+                            <tr>
+                                <td>{{ id[:8] }}...</td>
+                                <td>{{ task.user }}</td>
+                                <td>{{ task.type if task.type else 'N/A' }}</td>
+                                <td>{{ task.resolution if task.resolution else 'N/A' }}</td>
+                                <td>{{ task.completed }}/{{ task.total }} ({{ task.progress }}%)</td>
+                                <td><span class="status-badge status-{{ task.status | replace(' ', '') | replace('(', '') | replace(')', '') }}">{{ task.status }}</span></td>
+                                <td>
+                                    {% if task.status == 'Running' or task.status == 'Initializing' %}
+                                        <button class="btn-delete" onclick="stopTask('{{ id }}')"><i class="fas fa-stop-circle"></i> Dừng</button>
+                                    {% else %}
+                                        N/A
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
-    
-</div>
 
-<script>
-    // ... (logic JavaScript khác giữ nguyên) ...
-    
-    // SỬA: Thay đổi cách gửi dữ liệu cookie
-    document.getElementById('upload_form').addEventListener('submit', async (e) => {
-        e.preventDefault(); 
-        const cookieText = document.getElementById('cookie_text').value.trim();
-        const messageElement = document.getElementById('upload_message');
-        const statusSpan = document.getElementById('cookie_status_span');
 
-        messageElement.textContent = 'Đang xử lý...';
-        messageElement.style.color = '#fec95a';
+    <div id="userModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeUserModal()">&times;</span>
+            <h2 id="modalTitle"></h2>
+            <form id="userForm">
+                <div class="form-group">
+                    <label for="userUsername"><i class="fas fa-user-tag"></i> Tài khoản (Username):</label>
+                    <input type="text" id="userUsername" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="userName"><i class="fas fa-signature"></i> Tên hiển thị:</label>
+                    <input type="text" id="userName" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="userPassword"><i class="fas fa-lock"></i> Mật khẩu (Để trống nếu không thay đổi):</label>
+                    <input type="password" id="userPassword" name="password">
+                </div>
+                
+                <div class="form-group">
+                    <label for="userTeam"><i class="fas fa-users"></i> Team:</label>
+                    <select id="userTeam" name="team" required style="width: 100%; margin-right: 0;">
+                        <option value="">-- Chọn Team --</option>
+                        <option value="Team Lê Thắng">Team Lê Thắng</option>
+                        <option value="Team Lê Cường">Team Lê Cường</option>
+                        <option value="Development">Development (Admin/Dev)</option>
+                        <option value="N/A">Chưa gán Team</option>
+                    </select>
+                </div>
 
-        try {
-            // Kiểm tra cú pháp cơ bản
-            const parsedData = JSON.parse(cookieText);
+                <button type="submit" id="modalSubmitBtn" style="width: 100%;"><i class="fas fa-save"></i> Lưu</button>
+                <input type="hidden" id="isEditFlag" value="false">
+            </form>
+        </div>
+    </div>
 
-            const response = await fetch('/admin/upload_cookie_text', { // NEW ENDPOINT
+    <script>
+        // --- LOGIC QUẢN LÝ USER ---
+        
+        const userModal = document.getElementById('userModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const userForm = document.getElementById('userForm');
+        const userUsername = document.getElementById('userUsername');
+        const userName = document.getElementById('userName');
+        const userPassword = document.getElementById('userPassword');
+        const userTeam = document.getElementById('userTeam');
+        const isEditFlag = document.getElementById('isEditFlag');
+        
+        function openUserModal(mode, username = '', name = '', team = '') {
+            if (mode === 'add') {
+                modalTitle.innerHTML = '<i class="fas fa-user-plus"></i> Thêm User Mới';
+                userUsername.value = '';
+                userUsername.readOnly = false;
+                userName.value = '';
+                userPassword.value = '';
+                userPassword.required = true;
+                userTeam.value = team || ''; 
+                isEditFlag.value = 'false';
+            } else if (mode === 'edit') {
+                modalTitle.innerHTML = `<i class="fas fa-edit"></i> Sửa User: ${username}`;
+                userUsername.value = username;
+                userUsername.readOnly = true;
+                userName.value = name;
+                userPassword.value = '';
+                userPassword.required = false;
+                userTeam.value = team || '';
+                isEditFlag.value = 'true';
+            }
+            userModal.style.display = 'block';
+        }
+
+        function closeUserModal() {
+            userModal.style.display = 'none';
+        }
+
+        userForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const isEdit = isEditFlag.value === 'true';
+            const payload = {
+                username: userUsername.value,
+                name: userName.value,
+                password: userPassword.value,
+                team: userTeam.value,
+                is_edit: isEdit
+            };
+
+            const response = await fetch('/api/admin/users', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ cookie_data: parsedData })
+                body: JSON.stringify(payload)
             });
 
             const result = await response.json();
-            messageElement.textContent = result.message;
-
+            alert(result.message);
+            
             if (result.success) {
-                statusSpan.textContent = 'Đã tải';
-                statusSpan.className = 'status-badge status-Finished';
-                messageElement.style.color = '#4CAF50';
-                checkCookieLiveStatus();
-            } else {
-                 statusSpan.textContent = 'Lỗi';
+                closeUserModal();
+                window.location.reload(); 
+            }
+        });
+        
+        async function deleteUser(username) {
+            if (!confirm(`Bạn có chắc chắn muốn xóa tài khoản ${username} không?`)) return;
+
+            const response = await fetch(`/api/admin/users/${username}`, {
+                method: 'DELETE'
+            });
+
+            const result = await response.json();
+            alert(result.message);
+            if (result.success) {
+                window.location.reload();
+            }
+        }
+
+        // --- LOGIC KIỂM TRA COOKIE LIVE/DEAD ---
+        async function checkCookieLiveStatus() {
+            const btn = document.getElementById('btn_check_cookie');
+            const display = document.getElementById('live_status_display');
+            const originalText = btn.innerHTML;
+            
+            display.textContent = 'Đang kiểm tra...';
+            display.className = 'live-status live-unknown';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/api/admin/check_cookie');
+                const result = await response.json();
+
+                if (result.status === 'live') {
+                    display.textContent = 'LIVE (OK)';
+                    display.className = 'live-status live-live';
+                } else if (result.status === 'dead') {
+                    display.textContent = `DEAD (${result.message})`;
+                    display.className = 'live-status live-dead';
+                } else {
+                    display.textContent = 'Lỗi không xác định';
+                    display.className = 'live-status live-unknown';
+                }
+            } catch (e) {
+                display.textContent = 'Lỗi kết nối Server.';
+                display.className = 'live-status live-dead';
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        }
+        
+        // --- LOGIC CHUNG (COOKIE, TASK) ---
+        
+        document.getElementById('upload_form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const cookieText = document.getElementById('cookie_text').value.trim();
+            const messageElement = document.getElementById('upload_message');
+            const statusSpan = document.getElementById('cookie_status_span');
+
+            messageElement.textContent = 'Đang xử lý...';
+            messageElement.style.color = '#fec95a';
+
+            try {
+                const parsedData = JSON.parse(cookieText);
+
+                const response = await fetch('/admin/upload_cookie_text', { 
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ cookie_data: parsedData })
+                });
+
+                const result = await response.json();
+                messageElement.textContent = result.message;
+
+                if (result.success) {
+                    statusSpan.textContent = 'Đã tải';
+                    statusSpan.className = 'status-badge status-Finished';
+                    messageElement.style.color = '#4CAF50';
+                    checkCookieLiveStatus();
+                } else {
+                     statusSpan.textContent = 'Lỗi';
+                     statusSpan.className = 'status-badge status-Error';
+                     messageElement.style.color = '#ff6347';
+                }
+            } catch (error) {
+                 messageElement.textContent = `Lỗi: Cú pháp JSON không hợp lệ. (${error.message})`;
                  statusSpan.className = 'status-badge status-Error';
                  messageElement.style.color = '#ff6347';
             }
-        } catch (error) {
-             messageElement.textContent = `Lỗi: Cú pháp JSON không hợp lệ. (${error.message})`;
-             statusSpan.className = 'status-badge status-Error';
-             messageElement.style.color = '#ff6347';
+        });
+        
+        async function stopTask(taskId) {
+            if (!confirm(`Bạn có chắc muốn dừng tác vụ ${taskId.substring(0, 8)}...?`)) return;
+            const response = await fetch(`/api/stop_task/${taskId}`, { method: 'POST' });
+            const data = await response.json();
+            alert(data.message);
+            location.reload();
         }
-    });
 
-    // ... (logic JavaScript khác giữ nguyên) ...
-</script>
+        // Đóng modal khi click ra ngoài
+        window.onclick = function(event) {
+            if (event.target == userModal) {
+                userModal.style.display = "none";
+            }
+        }
+
+        // --- LOGIC THỐNG KÊ (Admin-only) ---
+        function calculateUserStats() {
+            const tasksData = {{ tasks|tojson|safe }};
+            const userStats = {};
+            
+            // Khởi tạo tất cả users
+            {% for user in users %}
+                userStats['{{ user.username }}'] = {
+                    total: 0,
+                    running: 0,
+                    finished: 0,
+                    error: 0,
+                    team: '{{ user.team }}'
+                };
+            {% endfor %}
+
+            // Tính toán thống kê từ tasks
+            for (const taskId in tasksData) {
+                const task = tasksData[taskId];
+                const username = task.user;
+                if (userStats[username]) {
+                    userStats[username].total++;
+                    
+                    if (task.status === 'Running' || task.status === 'Initializing') {
+                        userStats[username].running++;
+                    } else if (task.status === 'Finished') {
+                        userStats[username].finished++;
+                    } else if (task.status.startsWith('Error') || task.status === 'Stopped') {
+                        userStats[username].error++;
+                    }
+                }
+            }
+            
+            const tbody = document.getElementById('stats_body');
+            tbody.innerHTML = '';
+            
+            // Hiển thị thống kê
+            for (const username in userStats) {
+                const stats = userStats[username];
+                const row = tbody.insertRow();
+                
+                row.innerHTML = `
+                    <td>${username} (${stats.team})</td>
+                    <td>${stats.total}</td>
+                    <td style="color: #4CAF50;">${stats.finished}</td>
+                    <td style="color: #fec95a;">${stats.running}</td>
+                    <td style="color: #ff6347;">${stats.error}</td>
+                `;
+            }
+        }
+        
+        // --- LOGIC HIỂN THỊ USER ONLINE ---
+        async function updateActiveUsers() {
+            try {
+                const response = await fetch('/api/admin/active_users');
+                const activeUsers = await response.json();
+                
+                const onlineCountSpan = document.getElementById('online_count');
+                const activeUsersBody = document.getElementById('active_users_body');
+                
+                onlineCountSpan.textContent = Object.keys(activeUsers).length;
+                activeUsersBody.innerHTML = '';
+                
+                for (const username in activeUsers) {
+                    const user = activeUsers[username];
+                    const row = activeUsersBody.insertRow();
+                    row.innerHTML = `
+                        <td><span class="online-dot"></span>${user.username}</td>
+                        <td>${user.team}</td>
+                        <td>${user.last_seen}</td>
+                    `;
+                }
+
+            } catch (error) {
+                console.error("Error fetching active users:", error);
+            }
+        }
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            calculateUserStats();
+            updateActiveUsers(); 
+            checkCookieLiveStatus();
+        });
+        
+        // Cập nhật trạng thái thống kê và online mỗi 10 giây
+        setInterval(() => {
+            calculateUserStats();
+            updateActiveUsers();
+        }, 10000);
+    </script>
+</body>
+</html>
