@@ -4,8 +4,8 @@ import threading
 import uuid
 from pathlib import Path
 from datetime import datetime, timedelta, date
-from copy import deepcopy, copy 
-from json import JSONEncoder # Import để xử lý datetime
+from copy import deepcopy 
+from json import JSONEncoder 
 
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -17,6 +17,12 @@ from playwright.sync_api import sync_playwright
 from playwright._impl._errors import TargetClosedError
 from workers import start_worker
 
+# --- HẰNG SỐ CỦA WORKER ---
+FLOW_URL = "https://labs.google/fx/vi/tools/flow/project/447e27e0-fb0a-44b1-99f0-1624c028d6c4"
+P2V_GENERATE_BTN_XPATH = '//*[@id="__next"]/div[2]/div/div/div[2]/div/div[1]/div[2]/div/div[2]/div[2]/button[2]'
+PROMPT_BOX = "#PINHOLE_TEXT_AREA_ELEMENT_ID"
+CHECK_STATUS_URL = "https://aisandbox-pa.googleapis.com/v1/video:batchCheckAsyncVideoGenerationStatus" 
+
 # --- CUSTOM JSON ENCODER để xử lý các đối tượng không phải JSON ---
 class CustomJSONEncoder(JSONEncoder):
     def default(self, obj):
@@ -25,13 +31,6 @@ class CustomJSONEncoder(JSONEncoder):
         if isinstance(obj, threading.Event):
              return "threading.Event (Removed)"
         return JSONEncoder.default(self, obj)
-
-
-# --- HẰNG SỐ CỦA WORKER ---
-FLOW_URL = "https://labs.google/fx/vi/tools/flow/project/447e27e0-fb0a-44b1-99f0-1624c028d6c4"
-P2V_GENERATE_BTN_XPATH = '//*[@id="__next"]/div[2]/div/div/div[2]/div/div[1]/div[2]/div/div[2]/div[2]/button[2]'
-PROMPT_BOX = "#PINHOLE_TEXT_AREA_ELEMENT_ID"
-CHECK_STATUS_URL = "https://aisandbox-pa.googleapis.com/v1/video:batchCheckAsyncVideoGenerationStatus" 
 
 # --- KHỞI TẠO VÀ CẤU HÌNH ---
 app = Flask(__name__)
@@ -67,8 +66,7 @@ def load_users():
             }
         }
         with open(USERS_DB_PATH, 'w', encoding='utf-8') as f:
-            # Sử dụng CustomEncoder để xử lý datetime
-            json.dump(admin_data, f, indent=4, cls=CustomJSONEncoder) 
+            json.dump(admin_data, f, indent=4)
         return admin_data
     
     with open(USERS_DB_PATH, 'r', encoding='utf-8') as f:
@@ -181,7 +179,7 @@ def update_last_activity():
             pass
 
 
-# --- KIỂM TRA TRẠNG THÁI COOKIE MỚI (Giữ nguyên) ---
+# --- KIỂM TRA TRẠNG THÁI COOKIE MỚI ---
 def get_auth_token_from_cookies(cookies):
     """Sử dụng Playwright để lấy Auth Token (Bearer) từ cookies."""
     if not cookies:
@@ -325,19 +323,13 @@ def admin_dashboard():
     global GLOBAL_COOKIES
     cookie_status = "Đã tải" if GLOBAL_COOKIES else "Chưa tải"
     
-    # SỬA LỖI PICKLE: Lặp qua và làm sạch dữ liệu thủ công 
     tasks_for_render = {}
     for task_id, task in ACTIVE_TASKS.items():
-        # Dùng json.loads(json.dumps) để loại bỏ tất cả các đối tượng threading/datetime
-        # và chỉ giữ lại dữ liệu JSON đơn thuần.
-        try:
-            task_clean = json.loads(json.dumps(task, cls=CustomJSONEncoder))
-            task_clean.pop('stop_flag', None) 
-            tasks_for_render[task_id] = task_clean
-        except Exception as e:
-            print(f"Error cleaning task {task_id} for render: {e}")
-            # Nếu có lỗi, chỉ lưu trữ thông tin cơ bản để không làm sập trang
-            tasks_for_render[task_id] = {'id': task_id, 'status': 'Error (Clean)', 'user': task.get('user', 'N/A'), 'progress': 0, 'total': 1}
+        task_clean = deepcopy(task) 
+        task_clean.pop('stop_flag', None) 
+        if 'start_time' in task_clean and isinstance(task_clean['start_time'], datetime):
+             task_clean['start_time'] = str(task_clean['start_time'])
+        tasks_for_render[task_id] = task_clean
     
     users_data = []
     for uname, data in USERS_DB.items():
@@ -347,7 +339,7 @@ def admin_dashboard():
         
     return render_template('admin.html', 
                            cookie_status=cookie_status, 
-                           tasks=tasks_for_render, # Dữ liệu đã làm sạch
+                           tasks=tasks_for_render, 
                            users=users_data,
                            admin_name=current_user.get('name', 'Admin'))
 
@@ -415,27 +407,24 @@ def get_active_users_api():
     return jsonify(get_active_users())
 
 # --- UPLOAD, SUBMIT, DOWNLOAD ROUTES ---
-@app.route('/admin/upload_cookie', methods=['POST'])
-def upload_cookie():
+@app.route('/admin/upload_cookie_text', methods=['POST'])
+def upload_cookie_text():
     if not session.get('is_admin'):
         return jsonify({"success": False, "message": "Truy cập bị từ chối"}), 403
 
-    if 'cookie_file' not in request.files:
-        return jsonify({"success": False, "message": "Không tìm thấy file."})
-        
-    file = request.files['cookie_file']
-    if file.filename == '' or not file.filename.endswith('.json'):
-        return jsonify({"success": False, "message": "File không hợp lệ."})
-
     try:
-        data = json.load(file.stream)
+        data = request.json.get('cookie_data')
+        
+        if not data:
+            return jsonify({"success": False, "message": "Không tìm thấy dữ liệu cookie."})
+
         cookies_list = []
         if isinstance(data, dict) and "cookies" in data and isinstance(data["cookies"], list):
             cookies_list = data["cookies"]
         elif isinstance(data, list):
             cookies_list = data
         else:
-            return jsonify({"success": False, "message": "Nội dung file JSON không phải là danh sách cookie hợp lệ."})
+            return jsonify({"success": False, "message": "Nội dung JSON không phải là danh sách cookie hợp lệ."})
             
         global GLOBAL_COOKIES
         GLOBAL_COOKIES = cookies_list
