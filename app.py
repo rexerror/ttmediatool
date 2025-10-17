@@ -4,8 +4,6 @@ import threading
 import uuid
 from pathlib import Path
 from datetime import datetime, timedelta, date
-from copy import deepcopy 
-from json import JSONEncoder 
 
 from flask import Flask, render_template, request, redirect, url_for, session, jsonify, send_from_directory
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -24,13 +22,13 @@ PROMPT_BOX = "#PINHOLE_TEXT_AREA_ELEMENT_ID"
 CHECK_STATUS_URL = "https://aisandbox-pa.googleapis.com/v1/video:batchCheckAsyncVideoGenerationStatus" 
 
 # --- CUSTOM JSON ENCODER để xử lý các đối tượng không phải JSON ---
-class CustomJSONEncoder(JSONEncoder):
+class CustomJSONEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, datetime) or isinstance(obj, date):
             return obj.isoformat()
         if isinstance(obj, threading.Event):
              return "threading.Event (Removed)"
-        return JSONEncoder.default(self, obj)
+        return json.JSONEncoder.default(self, obj)
 
 # --- KHỞI TẠO VÀ CẤU HÌNH ---
 app = Flask(__name__)
@@ -57,7 +55,7 @@ def load_users():
         admin_data = {
             "admin": {
                 "username": "admin",
-                "password_hash": generate_password_hash("admin_pass123"), # Mật khẩu: admin_pass123
+                "password_hash": generate_password_hash("admin_pass123"),
                 "name": "Nguyễn Đức Thắng (Admin)",
                 "team": "Development",
                 "is_admin": True,
@@ -179,7 +177,7 @@ def update_last_activity():
             pass
 
 
-# --- KIỂM TRA TRẠNG THÁI COOKIE MỚI ---
+# --- KIỂM TRA TRẠNG THÁI COOKIE (Admin/User) ---
 def get_auth_token_from_cookies(cookies):
     """Sử dụng Playwright để lấy Auth Token (Bearer) từ cookies."""
     if not cookies:
@@ -406,19 +404,21 @@ def get_active_users_api():
     
     return jsonify(get_active_users())
 
-# --- UPLOAD, SUBMIT, DOWNLOAD ROUTES ---
+# --- UPLOAD COOKIE TEXT (ADMIN) ---
 @app.route('/admin/upload_cookie_text', methods=['POST'])
 def upload_cookie_text():
     if not session.get('is_admin'):
         return jsonify({"success": False, "message": "Truy cập bị từ chối"}), 403
 
     try:
+        # Lấy dữ liệu dạng JSON từ body request
         data = request.json.get('cookie_data')
         
         if not data:
             return jsonify({"success": False, "message": "Không tìm thấy dữ liệu cookie."})
 
         cookies_list = []
+        # Xử lý các định dạng cookie khác nhau
         if isinstance(data, dict) and "cookies" in data and isinstance(data["cookies"], list):
             cookies_list = data["cookies"]
         elif isinstance(data, list):
@@ -428,12 +428,14 @@ def upload_cookie_text():
             
         global GLOBAL_COOKIES
         GLOBAL_COOKIES = cookies_list
+        # Lưu vào file để sử dụng trong tương lai
         COOKIE_PATH.write_text(json.dumps(cookies_list), encoding='utf-8')
         
-        return jsonify({"success": True, "message": f"Tải cookie thành công. {len(cookies_list)} mục đã được lưu."})
+        return jsonify({"success": True, "message": f"Cập nhật cookie thành công. {len(cookies_list)} mục đã được lưu."})
         
     except Exception as e:
         return jsonify({"success": False, "message": f"Lỗi xử lý JSON: {e}"})
+
 
 @app.route('/api/upload_i2v', methods=['POST'])
 def upload_i2v_files():
@@ -585,7 +587,6 @@ def user_dashboard():
                                'allowed_team': allowed_team,
                                'today_date': date.today().strftime("%d/%m/%Y")
                            },
-                           # NEW: Pass history data
                            user_history=current_user_data.get('history', {}) 
                           )
 
